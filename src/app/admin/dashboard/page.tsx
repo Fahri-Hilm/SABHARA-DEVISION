@@ -4,7 +4,10 @@ import { buttonVariants } from "@/components/ui/button";
 import { StatCard } from "./_components/StatCard";
 import { TopMembersList } from "./_components/TopMembersList";
 import { ManualCleanupButton } from "./_components/ManualCleanupButton";
+import { ExportButton } from "./_components/ExportButton";
+import { MissedDutyAlerts } from "./_components/MissedDutyAlerts";
 import { fetchDutyStats } from "@/lib/supabase/stats";
+import { fetchMissedDutyAlerts } from "@/lib/supabase/alerts";
 import { requireAdmin } from "@/lib/auth/session";
 import { CalendarCheck, Clock, AlertTriangle, CheckCircle2, Users, ListChecks, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,7 +16,7 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   await requireAdmin();
-  const stats = await fetchDutyStats();
+  const [stats, alerts] = await Promise.all([fetchDutyStats(), fetchMissedDutyAlerts()]);
 
   return (
     <AppShell>
@@ -59,6 +62,11 @@ export default async function DashboardPage() {
 
           <section className="space-y-4">
             <div className="rounded-lg border border-border/60 bg-card/80 p-4">
+              <h2 className="mb-3 font-display text-lg font-semibold">Belum Duty 3+ Hari</h2>
+              <MissedDutyAlerts alerts={alerts} />
+            </div>
+
+            <div className="rounded-lg border border-border/60 bg-card/80 p-4">
               <h2 className="mb-3 font-display text-lg font-semibold">Status Laporan</h2>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
@@ -78,7 +86,10 @@ export default async function DashboardPage() {
 
             <div className="rounded-lg border border-border/60 bg-card/80 p-4">
               <h2 className="mb-3 font-display text-lg font-semibold">Maintenance</h2>
-              <ManualCleanupButton />
+              <div className="flex flex-wrap items-center gap-3">
+                <ManualCleanupButton />
+                <ExportButton />
+              </div>
             </div>
 
             <div className="flex gap-2">
