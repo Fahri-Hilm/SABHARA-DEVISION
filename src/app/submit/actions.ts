@@ -14,7 +14,7 @@ export async function submitDutyAction(formData: FormData): Promise<{ error?: st
   const duty_date = String(formData.get("duty_date") ?? "");
   const on_duty_time = String(formData.get("on_duty_time") ?? "");
   const off_duty_time = String(formData.get("off_duty_time") ?? "");
-  const notes = String(formData.get("notes") ?? "").trim() || null;
+  const notes = String(formData.get("notes") ?? "").trim() || undefined;
 
   if (!duty_date || !on_duty_time || !off_duty_time) {
     return { error: "Tanggal, jam on duty, dan jam off duty wajib diisi" };
