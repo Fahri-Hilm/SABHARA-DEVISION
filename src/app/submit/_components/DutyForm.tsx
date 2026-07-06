@@ -13,6 +13,7 @@ import { MAX_PHOTOS, ALLOWED_PHOTO_MIME_TYPES } from "@/lib/schemas/upload";
 import { submitDutyAction } from "../actions";
 import { toast } from "sonner";
 import type { Member } from "@/types/db";
+import { TimeSelect } from "./TimeSelect";
 
 type DutyFormProps = {
   roster: Member[];
@@ -114,14 +115,14 @@ export function DutyForm({ roster }: DutyFormProps) {
         </div>
         <div className="space-y-2">
           <Label htmlFor="on_duty_time">Jam On Duty</Label>
-          <Input id="on_duty_time" name="on_duty_time" type="time" required />
+          <TimeSelect name="on_duty_time" defaultValue="08:00" />
         </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="off_duty_time">Jam Off Duty</Label>
-          <Input id="off_duty_time" name="off_duty_time" type="time" required />
+          <TimeSelect name="off_duty_time" defaultValue="16:00" />
         </div>
       </div>
 
