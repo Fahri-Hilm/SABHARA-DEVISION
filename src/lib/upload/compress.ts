@@ -13,11 +13,10 @@ export type CompressedImage = {
 
 export async function compressImage(
   file: File,
-  options: { maxWidth?: number; quality?: number; maxSizeKB?: number } = {},
+  options: { maxWidth?: number; quality?: number } = {},
 ): Promise<CompressedImage> {
   const maxWidth = options.maxWidth ?? MAX_WIDTH;
   const quality = options.quality ?? QUALITY;
-  const maxSizeKB = options.maxSizeKB ?? TARGET_SIZE_KB;
 
   const compressed = await imageCompression(file, {
     maxWidthOrHeight: maxWidth,
