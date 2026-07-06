@@ -4,6 +4,7 @@ import { DutyFeed } from "@/components/feed/DutyFeed";
 import { FeedFilter } from "@/components/feed/FeedFilter";
 import { fetchDutyReports, fetchMemberRoster } from "@/lib/supabase/queries";
 import { feedFilterSchema } from "@/lib/schemas/feed-filter";
+import { getSession } from "@/lib/auth/session";
 import type { DutyReportStatus } from "@/types/db";
 
 export const dynamic = "force-dynamic";
@@ -29,9 +30,10 @@ export default async function FeedPage({
   });
   const filter = filterParse.success ? filterParse.data : {};
 
-  const [reports, roster] = await Promise.all([
+  const [reports, roster, session] = await Promise.all([
     fetchDutyReports(filter, 50),
     fetchMemberRoster(),
+    getSession(),
   ]);
 
   return (
@@ -40,7 +42,7 @@ export default async function FeedPage({
         <div className="mx-auto max-w-3xl space-y-4">
           <FeedFilter roster={roster} />
           <QueryProvider>
-            <DutyFeed initialReports={reports} filter={filter} />
+            <DutyFeed initialReports={reports} filter={filter} isAdmin={session?.role === "admin"} />
           </QueryProvider>
         </div>
       </main>

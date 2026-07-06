@@ -6,6 +6,7 @@ import { PhotoGrid } from "./PhotoGrid";
 import { MemberAvatar } from "@/components/discord/MemberAvatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ApprovalActions } from "@/components/approval/ApprovalActions";
 import type { DutyReportWithMember } from "@/lib/supabase/queries";
 import type { DutyReportStatus, FeedFilter } from "@/types/db";
 import { ListChecks } from "lucide-react";
@@ -35,9 +36,10 @@ type DutyFeedProps = {
   initialReports: DutyReportWithMember[];
   filter: FeedFilter;
   pollIntervalMs?: number;
+  isAdmin: boolean;
 };
 
-function DutyReportCard({ report }: { report: DutyReportWithMember }) {
+function DutyReportCard({ report, isAdmin }: { report: DutyReportWithMember; isAdmin: boolean }) {
   return (
     <article
       className="rounded-lg border border-border/60 bg-card/80 p-4"
@@ -76,6 +78,7 @@ function DutyReportCard({ report }: { report: DutyReportWithMember }) {
           </div>
         </div>
       </div>
+      <ApprovalActions report={report} isAdmin={isAdmin} />
     </article>
   );
 }
@@ -99,7 +102,7 @@ function FeedSkeleton() {
   );
 }
 
-export function DutyFeed({ initialReports, filter, pollIntervalMs = 30000 }: DutyFeedProps) {
+export function DutyFeed({ initialReports, filter, pollIntervalMs = 30000, isAdmin }: DutyFeedProps) {
   const queryKey = ["duty-reports", filter];
 
   const { data, isPending, isError, error } = useQuery({
@@ -145,7 +148,7 @@ export function DutyFeed({ initialReports, filter, pollIntervalMs = 30000 }: Dut
       )}
       {!isPending &&
         !isError &&
-        reports.map((r) => <DutyReportCard key={r.id} report={r} />)}
+        reports.map((r) => <DutyReportCard key={r.id} report={r} isAdmin={isAdmin} />)}
     </FeedChannel>
   );
 }
