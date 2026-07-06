@@ -1,6 +1,27 @@
 import { createAdminClient } from "./admin";
 import type { DutyReport, Member, DutyPhoto, FeedFilter } from "@/types/db";
 
+export type DutyPhotoWithUrl = DutyPhoto & { signed_url: string | null };
+
+export type DutyReportWithMember = Omit<DutyReport, never> & {
+  members: Pick<Member, "id" | "name" | "rank" | "badge_number">;
+  duty_photos: DutyPhotoWithUrl[];
+};
+
+async function attachSignedUrls(photos: DutyPhoto[]): Promise<DutyPhotoWithUrl[]> {
+  const admin = createAdminClient();
+  return Promise.all(
+    photos.map(async (photo) => {
+      if (!photo.storage_path) return { ...photo, signed_url: null };
+      const { data, error } = await admin
+        .storage
+        .from("duty-photos")
+        .createSignedUrl(photo.storage_path, 3600);
+      return { ...photo, signed_url: error || !data?.signedUrl ? null : data.signedUrl };
+    }),
+  );
+}
+
 async function fetchRosterInternal(): Promise<Member[]> {
   const admin = createAdminClient();
   const { data, error } = await admin
@@ -15,11 +36,6 @@ async function fetchRosterInternal(): Promise<Member[]> {
 export async function fetchMemberRoster(): Promise<Member[]> {
   return fetchRosterInternal();
 }
-
-export type DutyReportWithMember = DutyReport & {
-  members: Pick<Member, "id" | "name" | "rank" | "badge_number">;
-  duty_photos: DutyPhoto[];
-};
 
 export async function fetchDutyReports(
   filter: FeedFilter = {},
@@ -42,7 +58,14 @@ export async function fetchDutyReports(
 
   const { data, error } = await query;
   if (error) throw error;
-  return (data ?? []) as DutyReportWithMember[];
+
+  const reports = (data ?? []) as Array<Omit<DutyReportWithMember, "duty_photos"> & { duty_photos: DutyPhoto[] }>;
+  return Promise.all(
+    reports.map(async (r) => ({
+      ...r,
+      duty_photos: await attachSignedUrls(r.duty_photos),
+    })),
+  );
 }
 
 export async function fetchDutyReportById(
@@ -57,5 +80,7 @@ export async function fetchDutyReportById(
     .eq("id", id)
     .maybeSingle();
   if (error) throw error;
-  return (data ?? null) as DutyReportWithMember | null;
+  if (!data) return null;
+  const report = data as Omit<DutyReportWithMember, "duty_photos"> & { duty_photos: DutyPhoto[] };
+  return { ...report, duty_photos: await attachSignedUrls(report.duty_photos) };
 }
