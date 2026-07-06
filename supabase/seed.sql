@@ -11,6 +11,6 @@ INSERT INTO members (name, rank, badge_number, role, is_active) VALUES
 ON CONFLICT DO NOTHING;
 
 INSERT INTO access_codes (code_hash, role, is_active) VALUES
-  (encode(digest('SABHARA-MEMBER-2026', 'sha256'), 'hex'), 'member', true),
+  (encode(digest('sabhara2026', 'sha256'), 'hex'), 'member', true),
   (encode(digest('SABHARA-ADMIN-2026', 'sha256'), 'hex'), 'admin', true)
 ON CONFLICT (code_hash) DO NOTHING;
