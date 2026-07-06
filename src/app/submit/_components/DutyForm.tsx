@@ -113,18 +113,10 @@ export function DutyForm({ roster }: DutyFormProps) {
           <Label htmlFor="duty_date">Tanggal Duty</Label>
           <Input id="duty_date" name="duty_date" type="date" required />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="on_duty_time">Jam On Duty</Label>
-          <TimeSelect name="on_duty_time" defaultValue="08:00" />
-        </div>
+        <TimeSelect name="on_duty_time" label="Jam On Duty" defaultValue="08:00" required />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="off_duty_time">Jam Off Duty</Label>
-          <TimeSelect name="off_duty_time" defaultValue="16:00" />
-        </div>
-      </div>
+      <TimeSelect name="off_duty_time" label="Jam Off Duty" defaultValue="16:00" required />
 
       <div className="space-y-2">
         <Label htmlFor="notes">Catatan (opsional, maks 1000 karakter)</Label>

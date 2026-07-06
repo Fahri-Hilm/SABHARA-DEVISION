@@ -41,9 +41,15 @@ type DutyFeedProps = {
 };
 
 function DutyReportCard({ report, isAdmin }: { report: DutyReportWithMember; isAdmin: boolean }) {
+  const statusBorder =
+    report.status === "approved"
+      ? "border-success/40 hover:neon-glow-success"
+      : report.status === "rejected"
+        ? "border-destructive/40"
+        : "border-cyan/20 hover:neon-glow";
   return (
     <article
-      className="rounded-lg border border-border/60 bg-card/80 p-4"
+      className={`glass gradient-border hover-lift fade-up rounded-xl p-4 ${statusBorder}`}
       data-testid="duty-feed-card"
     >
       <div className="flex gap-3">
