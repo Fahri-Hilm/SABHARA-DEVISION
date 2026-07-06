@@ -113,14 +113,16 @@ export function DutyForm({ roster }: DutyFormProps) {
           <Input id="duty_date" name="duty_date" type="date" required />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="on_duty_at">On Duty</Label>
-          <Input id="on_duty_at" name="on_duty_at" type="datetime-local" required />
+          <Label htmlFor="on_duty_time">Jam On Duty</Label>
+          <Input id="on_duty_time" name="on_duty_time" type="time" required />
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="off_duty_at">Off Duty</Label>
-        <Input id="off_duty_at" name="off_duty_at" type="datetime-local" required />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="off_duty_time">Jam Off Duty</Label>
+          <Input id="off_duty_time" name="off_duty_time" type="time" required />
+        </div>
       </div>
 
       <div className="space-y-2">

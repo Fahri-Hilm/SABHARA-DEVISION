@@ -7,24 +7,29 @@ import { requireMember } from "@/lib/auth/session";
 import { dutyReportInsertSchema } from "@/lib/schemas/duty-report";
 import type { DutyPhoto } from "@/types/db";
 
-function toDatetimeLocalValue(iso: string): string {
-  return iso;
-}
-
 export async function submitDutyAction(formData: FormData): Promise<{ error?: string }> {
   const session = await requireMember();
 
   const member_id = String(formData.get("member_id") ?? "");
   const duty_date = String(formData.get("duty_date") ?? "");
-  const on_duty_at = toDatetimeLocalValue(String(formData.get("on_duty_at") ?? ""));
-  const off_duty_at = toDatetimeLocalValue(String(formData.get("off_duty_at") ?? ""));
+  const on_duty_time = String(formData.get("on_duty_time") ?? "");
+  const off_duty_time = String(formData.get("off_duty_time") ?? "");
   const notes = String(formData.get("notes") ?? "").trim() || null;
+
+  if (!duty_date || !on_duty_time || !off_duty_time) {
+    return { error: "Tanggal, jam on duty, dan jam off duty wajib diisi" };
+  }
+
+  const on_duty_iso = `${duty_date}T${on_duty_time}:00`;
+  const off_duty_iso = `${duty_date}T${off_duty_time}:00`;
+  const on_duty_at = new Date(on_duty_iso).toISOString();
+  const off_duty_at = new Date(off_duty_iso).toISOString();
 
   const parsed = dutyReportInsertSchema.safeParse({
     member_id,
     duty_date,
-    on_duty_at: new Date(on_duty_at).toISOString(),
-    off_duty_at: new Date(off_duty_at).toISOString(),
+    on_duty_at,
+    off_duty_at,
     notes,
   });
   if (!parsed.success) {
