@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { requireAdmin } from "@/lib/auth/session";
+import { requireAdmin, requireMember } from "@/lib/auth/session";
 
 export async function approveDutyAction(reportId: string): Promise<{ error?: string }> {
   const session = await requireAdmin();
@@ -64,7 +64,7 @@ export async function rejectDutyAction(
 }
 
 export async function deleteDutyAction(reportId: string): Promise<{ error?: string }> {
-  await requireAdmin();
+  const session = await requireMember();
 
   const admin = createAdminClient();
   const { data: report, error: findError } = await admin
@@ -77,10 +77,12 @@ export async function deleteDutyAction(reportId: string): Promise<{ error?: stri
     return { error: "Laporan tidak ditemukan" };
   }
 
-  const createdAt = new Date(report.created_at).getTime();
-  const oneHourAgo = Date.now() - 60 * 60 * 1000;
-  if (createdAt < oneHourAgo) {
-    return { error: "Laporan hanya bisa dihapus dalam 1 jam pertama" };
+  if (session.role !== "admin") {
+    const createdAt = new Date(report.created_at).getTime();
+    const oneHourAgo = Date.now() - 60 * 60 * 1000;
+    if (createdAt < oneHourAgo) {
+      return { error: "Laporan hanya bisa dihapus dalam 1 jam pertama" };
+    }
   }
 
   const { error } = await admin

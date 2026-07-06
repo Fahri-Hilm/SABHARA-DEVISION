@@ -7,6 +7,7 @@ import { MemberAvatar } from "@/components/discord/MemberAvatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ApprovalActions } from "@/components/approval/ApprovalActions";
+import { DeleteButton } from "@/components/approval/DeleteButton";
 import type { DutyReportWithMember } from "@/lib/supabase/queries";
 import type { DutyReportStatus, FeedFilter } from "@/types/db";
 import { ListChecks } from "lucide-react";
@@ -81,7 +82,12 @@ function DutyReportCard({ report, isAdmin }: { report: DutyReportWithMember; isA
           </div>
         </div>
       </div>
-      <ApprovalActions report={report} isAdmin={isAdmin} />
+      <div className="mt-3 flex items-center justify-between gap-2 border-t border-border/40 pt-3">
+        <ApprovalActions report={report} isAdmin={isAdmin} />
+        <div className="ml-auto">
+          <DeleteButton report={report} isAdmin={isAdmin} />
+        </div>
+      </div>
     </article>
   );
 }
