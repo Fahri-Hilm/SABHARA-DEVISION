@@ -2,7 +2,6 @@ import imageCompression from "browser-image-compression";
 
 const MAX_WIDTH = 1280;
 const QUALITY = 0.7;
-const TARGET_SIZE_KB = 200;
 
 export type CompressedImage = {
   file: File;
