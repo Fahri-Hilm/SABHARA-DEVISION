@@ -21,6 +21,13 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Kepolisian Futuristic Sabhara Devision",
   description: "Duty report web app untuk RP Divisi Sabhara Kepolisian Futuristic",
+  manifest: "/manifest.json",
+  themeColor: "#22d3ee",
+  appleWebApp: {
+    title: "Sabhara Duty",
+    statusBarStyle: "black-translucent",
+    capable: true,
+  },
 };
 
 export default function RootLayout({

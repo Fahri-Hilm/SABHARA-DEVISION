@@ -194,6 +194,15 @@ html {
   text-shadow: 0 0 8px oklch(0.78 0.15 195 / 0.6);
 }
 
+@keyframes pulse-pending {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.pulse-pending {
+  animation: pulse-pending 2s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   ::before,

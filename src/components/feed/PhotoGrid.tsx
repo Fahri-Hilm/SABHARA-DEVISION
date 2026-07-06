@@ -1,5 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { ImageOff } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Photo = {
   id: string;
@@ -13,7 +17,10 @@ type PhotoGridProps = {
 };
 
 function PhotoItem({ photo }: { photo: Photo }) {
-  if (!photo.storage_path || !photo.signed_url) {
+  const [imgError, setImgError] = useState(false);
+  const queryClient = useQueryClient();
+
+  if (!photo.storage_path || !photo.signed_url || imgError) {
     return (
       <div
         className="flex aspect-square items-center justify-center rounded-md border border-border/40 bg-secondary/50 text-center"
@@ -21,8 +28,10 @@ function PhotoItem({ photo }: { photo: Photo }) {
       >
         <div className="space-y-1 px-2">
           <ImageOff className="mx-auto h-5 w-5 text-muted-foreground/60" />
-          <p className="text-[10px] text-muted-foreground/70">Foto dihapus</p>
-          <p className="text-[9px] text-muted-foreground/50">14 hari</p>
+          <p className="text-[10px] text-muted-foreground/70">
+            {imgError ? "Gagal memuat" : "Foto dihapus"}
+          </p>
+          {!imgError && <p className="text-[9px] text-muted-foreground/50">14 hari</p>}
         </div>
       </div>
     );
@@ -30,10 +39,15 @@ function PhotoItem({ photo }: { photo: Photo }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
+      key={photo.signed_url}
       src={photo.signed_url}
       alt="Bukti duty"
       className="aspect-square w-full rounded-md border border-border/40 object-cover"
       loading="lazy"
+      onError={() => {
+        setImgError(true);
+        queryClient.invalidateQueries({ queryKey: ["duty-reports"] });
+      }}
     />
   );
 }

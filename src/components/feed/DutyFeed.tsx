@@ -53,7 +53,10 @@ function DutyReportCard({ report, isAdmin }: { report: DutyReportWithMember; isA
             {report.members.rank && (
               <span className="text-xs text-muted-foreground">{report.members.rank}</span>
             )}
-            <Badge variant={STATUS_VARIANT[report.status]} className="ml-auto">
+            <Badge
+              variant={STATUS_VARIANT[report.status]}
+              className={`ml-auto ${report.status === "pending" ? "pulse-pending" : ""}`}
+            >
               {STATUS_LABEL[report.status]}
             </Badge>
           </div>
