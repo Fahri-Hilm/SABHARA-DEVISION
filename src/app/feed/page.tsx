@@ -30,16 +30,28 @@ export default async function FeedPage({
   });
   const filter = filterParse.success ? filterParse.data : {};
 
-  const [reports, roster, session] = await Promise.all([
-    fetchDutyReports(filter, 50),
-    fetchMemberRoster(),
-    getSession(),
-  ]);
+  let reports: Awaited<ReturnType<typeof fetchDutyReports>> = [];
+  let roster: Awaited<ReturnType<typeof fetchMemberRoster>> = [];
+  let fetchError: string | null = null;
+  try {
+    [reports, roster] = await Promise.all([
+      fetchDutyReports(filter, 50),
+      fetchMemberRoster(),
+    ]);
+  } catch (e) {
+    fetchError = e instanceof Error ? e.message : "Gagal memuat data";
+  }
+  const session = await getSession();
 
   return (
     <AppShell>
       <main className="p-4 lg:p-6">
         <div className="mx-auto max-w-3xl space-y-4">
+          {fetchError && (
+            <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+              Gagal memuat data: {fetchError}. Coba refresh.
+            </div>
+          )}
           <FeedFilter roster={roster} />
           <QueryProvider>
             <DutyFeed initialReports={reports} filter={filter} isAdmin={session?.role === "admin"} />

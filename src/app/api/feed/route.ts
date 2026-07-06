@@ -25,8 +25,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ reports });
   } catch (e) {
     return NextResponse.json(
-      { error: e instanceof Error ? e.message : "Gagal memuat feed" },
-      { status: 500 },
+      { reports: [], error: e instanceof Error ? e.message : "Gagal memuat feed" },
+      { status: 200 },
     );
   }
 }
