@@ -32,9 +32,8 @@ export async function fetchMemberStats(memberId: string): Promise<MemberStats | 
 
   const { data: reports, error } = await admin
     .from("duty_reports")
-    .select("id, on_duty_at, off_duty_at, status, created_at, deleted_at")
+    .select("id, on_duty_at, off_duty_at, status, created_at")
     .eq("member_id", memberId)
-    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   if (error) return null;
@@ -45,7 +44,6 @@ export async function fetchMemberStats(memberId: string): Promise<MemberStats | 
     off_duty_at: string;
     status: string;
     created_at: string;
-    deleted_at: string | null;
   }>;
 
   if (all.length === 0) {
@@ -105,7 +103,6 @@ export async function fetchMemberDutyHistory(
     .from("duty_reports")
     .select("*, duty_photos(*)")
     .eq("member_id", memberId)
-    .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .limit(limit);
 

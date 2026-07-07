@@ -5,12 +5,14 @@ import { StatCard } from "./_components/StatCard";
 import { TopMembersList } from "./_components/TopMembersList";
 import { ManualCleanupButton } from "./_components/ManualCleanupButton";
 import { ExportButton } from "./_components/ExportButton";
+import { ExportHistory } from "./_components/ExportHistory";
+import { ManualExportButton } from "./_components/ManualExportButton";
 import { MissedDutyAlerts } from "./_components/MissedDutyAlerts";
 import { fetchDutyStats } from "@/lib/supabase/stats";
 import { fetchMissedDutyAlerts } from "@/lib/supabase/alerts";
 import { fetchMembersWithStats } from "@/lib/supabase/member-stats";
 import { requireAdmin } from "@/lib/auth/session";
-import { CalendarCheck, Clock, AlertTriangle, CheckCircle2, Users, ListChecks, ArrowLeft, ChevronRight } from "lucide-react";
+import { CalendarCheck, Clock, AlertTriangle, CheckCircle2, Users, ListChecks, ArrowLeft, ChevronRight, History } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -124,10 +126,26 @@ export default async function DashboardPage() {
 
             <div className="glass rounded-lg border border-border/60 p-4">
               <h2 className="mb-3 font-display text-lg font-semibold">Maintenance</h2>
-              <div className="flex flex-wrap items-center gap-3">
-                <ManualCleanupButton />
-                <ExportButton />
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center gap-3">
+                  <ManualCleanupButton />
+                  <ExportButton />
+                </div>
+                <div className="border-t border-border/40 pt-3">
+                  <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    Export & Hapus Duty &gt;14 Hari
+                  </p>
+                  <ManualExportButton />
+                </div>
               </div>
+            </div>
+
+            <div className="glass rounded-lg border border-border/60 p-4">
+              <h2 className="mb-3 flex items-center gap-2 font-display text-lg font-semibold">
+                <History className="h-4 w-4 text-cyan" />
+                Riwayat Export CSV
+              </h2>
+              <ExportHistory />
             </div>
 
             <div className="flex gap-2">
