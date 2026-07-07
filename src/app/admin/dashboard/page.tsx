@@ -8,15 +8,22 @@ import { ExportButton } from "./_components/ExportButton";
 import { MissedDutyAlerts } from "./_components/MissedDutyAlerts";
 import { fetchDutyStats } from "@/lib/supabase/stats";
 import { fetchMissedDutyAlerts } from "@/lib/supabase/alerts";
+import { fetchMembersWithStats } from "@/lib/supabase/member-stats";
 import { requireAdmin } from "@/lib/auth/session";
-import { CalendarCheck, Clock, AlertTriangle, CheckCircle2, Users, ListChecks, ArrowLeft } from "lucide-react";
+import { CalendarCheck, Clock, AlertTriangle, CheckCircle2, Users, ListChecks, ArrowLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   await requireAdmin();
-  const [stats, alerts] = await Promise.all([fetchDutyStats(), fetchMissedDutyAlerts()]);
+  const [stats, alerts, membersWithStats] = await Promise.all([
+    fetchDutyStats(),
+    fetchMissedDutyAlerts(),
+    fetchMembersWithStats(),
+  ]);
+
+  const activeThisWeek = membersWithStats.filter((m) => m.stats.weekly_duty > 0);
 
   return (
     <AppShell>
@@ -55,18 +62,49 @@ export default async function DashboardPage() {
         </div>
 
         <div className="mt-6 grid gap-4 lg:grid-cols-2">
-          <section className="rounded-lg border border-border/60 bg-card/80 p-4">
+          <section className="glass rounded-lg border border-border/60 p-4">
             <h2 className="mb-4 font-display text-lg font-semibold">Top Anggota Minggu Ini</h2>
             <TopMembersList members={stats.top_members} />
           </section>
 
           <section className="space-y-4">
-            <div className="rounded-lg border border-border/60 bg-card/80 p-4">
+            <div className="glass rounded-lg border border-border/60 p-4">
+              <h2 className="mb-3 flex items-center gap-2 font-display text-lg font-semibold">
+                <Users className="h-4 w-4 text-cyan" />
+                Anggota Aktif Minggu Ini
+              </h2>
+              {activeThisWeek.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Belum ada anggota duty minggu ini.</p>
+              ) : (
+                <div className="space-y-2">
+                  {activeThisWeek.map((m) => (
+                    <Link
+                      key={m.id}
+                      href={`/admin/member/${m.id}`}
+                      className="group flex items-center gap-3 rounded-md border border-border/40 bg-card/60 p-2 transition-colors hover:border-cyan/40 hover:bg-cyan/5"
+                    >
+                      <span className="font-mono text-xs text-muted-foreground w-6">
+                        #{activeThisWeek.indexOf(m) + 1}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="truncate text-sm font-medium">{m.name}</p>
+                        <p className="font-mono text-[10px] text-muted-foreground">
+                          {m.stats.weekly_duty} duty • {m.stats.weekly_hours}j minggu ini • {m.stats.total_duty} total
+                        </p>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="glass rounded-lg border border-border/60 p-4">
               <h2 className="mb-3 font-display text-lg font-semibold">Belum Duty 3+ Hari</h2>
               <MissedDutyAlerts alerts={alerts} />
             </div>
 
-            <div className="rounded-lg border border-border/60 bg-card/80 p-4">
+            <div className="glass rounded-lg border border-border/60 p-4">
               <h2 className="mb-3 font-display text-lg font-semibold">Status Laporan</h2>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
@@ -84,7 +122,7 @@ export default async function DashboardPage() {
               </div>
             </div>
 
-            <div className="rounded-lg border border-border/60 bg-card/80 p-4">
+            <div className="glass rounded-lg border border-border/60 p-4">
               <h2 className="mb-3 font-display text-lg font-semibold">Maintenance</h2>
               <div className="flex flex-wrap items-center gap-3">
                 <ManualCleanupButton />
