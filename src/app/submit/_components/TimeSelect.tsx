@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useId } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Clock } from "lucide-react";
@@ -12,49 +12,74 @@ type TimeSelectProps = {
   required?: boolean;
 };
 
-const HOURS = Array.from({ length: 48 }, (_, i) => {
-  const h = Math.floor(i / 2);
-  const m = (i % 2) * 30;
-  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-});
-
-const PERIODE_LABEL: Record<string, string> = {
-  "00:00": "Tengah Malam",
-  "01:00": "Dini Hari",
-  "02:00": "Dini Hari",
-  "03:00": "Dini Hari",
-  "04:00": "Subuh",
-  "05:00": "Subuh",
-  "06:00": "Pagi",
-  "07:00": "Pagi",
-  "08:00": "Pagi",
-  "09:00": "Pagi",
-  "10:00": "Pagi",
-  "11:00": "Pagi",
-  "12:00": "Siang",
-  "13:00": "Siang",
-  "14:00": "Siang",
-  "15:00": "Siang",
-  "16:00": "Sore",
-  "17:00": "Sore",
-  "18:00": "Sore",
-  "19:00": "Malam",
-  "20:00": "Malam",
-  "21:00": "Malam",
-  "22:00": "Malam",
-  "23:00": "Malam",
+const PERIODE_BY_HOUR: Record<number, string> = {
+  0: "Tengah Malam",
+  1: "Dini Hari",
+  2: "Dini Hari",
+  3: "Dini Hari",
+  4: "Subuh",
+  5: "Subuh",
+  6: "Pagi",
+  7: "Pagi",
+  8: "Pagi",
+  9: "Pagi",
+  10: "Pagi",
+  11: "Pagi",
+  12: "Siang",
+  13: "Siang",
+  14: "Siang",
+  15: "Siang",
+  16: "Sore",
+  17: "Sore",
+  18: "Sore",
+  19: "Malam",
+  20: "Malam",
+  21: "Malam",
+  22: "Malam",
+  23: "Malam",
 };
 
 function isValidTime(value: string): boolean {
   return /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(value);
 }
 
+function getPeriode(value: string): string {
+  const match = value.match(/^(\d{1,2}):/);
+  if (!match) return "";
+  const hour = parseInt(match[1]!, 10);
+  if (isNaN(hour) || hour < 0 || hour > 23) return "";
+  return PERIODE_BY_HOUR[hour] ?? "";
+}
+
+function formatTime(value: string): string {
+  const match = value.match(/^(\d{1,2}):(\d{1,2})$/);
+  if (!match) return value;
+  const h = match[1]!.padStart(2, "0");
+  const m = match[2]!.padStart(2, "0");
+  return `${h}:${m}`;
+}
+
 export function TimeSelect({ name, label, defaultValue = "08:00", required }: TimeSelectProps) {
-  const listId = useId();
   const [value, setValue] = useState(defaultValue);
   const [touched, setTouched] = useState(false);
-  const periode = PERIODE_LABEL[value] ?? "";
+  const periode = getPeriode(value);
   const invalid = touched && !isValidTime(value);
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    let v = e.target.value.replace(/[^\d:]/g, "");
+    if (v.length === 2 && !v.includes(":") && !value.includes(":")) {
+      v = v + ":";
+    }
+    if (v.length > 5) v = v.slice(0, 5);
+    setValue(v);
+  }
+
+  function handleBlur() {
+    setTouched(true);
+    if (isValidTime(value)) {
+      setValue(formatTime(value));
+    }
+  }
 
   return (
     <div className="space-y-1.5">
@@ -74,27 +99,20 @@ export function TimeSelect({ name, label, defaultValue = "08:00", required }: Ti
           pattern="[0-9]{2}:[0-9]{2}"
           placeholder="HH:MM"
           value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onBlur={() => setTouched(true)}
-          list={listId}
+          onChange={handleChange}
+          onBlur={handleBlur}
           required={required}
           autoComplete="off"
+          maxLength={5}
           className={`pl-8 font-mono ${invalid ? "border-destructive" : ""}`}
           aria-invalid={invalid}
         />
-        <datalist id={listId}>
-          {HOURS.map((h) => (
-            <option key={h} value={h}>
-              {PERIODE_LABEL[h] ? `${PERIODE_LABEL[h]} ${h}` : h}
-            </option>
-          ))}
-        </datalist>
       </div>
       {invalid && (
-        <p className="text-xs text-destructive">Format jam HH:MM, contoh 08:00</p>
+        <p className="text-xs text-destructive">Format jam HH:MM, contoh 08:15</p>
       )}
       <p className="text-[10px] text-muted-foreground/70">
-        Ketik manual atau pilih dari daftar
+        Jam 00-23, menit 00-59
       </p>
     </div>
   );
