@@ -41,10 +41,10 @@ export default function LoginPage() {
       <main className="flex flex-1 items-center justify-center p-6 py-12">
         <div className="w-full max-w-md space-y-6">
           <div className="fade-up text-center space-y-2" style={{ animationDelay: "100ms" }}>
-            <div className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-cyan/30 bg-cyan/10 neon-glow">
-              <ShieldCheck className="h-6 w-6 text-cyan" />
+            <div className="inline-flex h-12 w-12 items-center justify-center rounded-full glow-border bg-cyan-950/50">
+              <ShieldCheck className="h-6 w-6 text-cyan-400" />
             </div>
-            <h1 className="font-display text-2xl font-bold text-gradient">
+            <h1 className="font-display text-2xl font-bold text-gradient glow-text">
               Sabhara Devision
             </h1>
             <p className="text-sm text-muted-foreground">Login untuk melapor duty</p>
@@ -53,11 +53,11 @@ export default function LoginPage() {
           <div className="fade-up glass-strong gradient-border rounded-xl p-6" style={{ animationDelay: "200ms" }}>
             <Tabs value={tab} onValueChange={(v) => setTab(v as "member" | "admin")}>
               <TabsList className="grid w-full grid-cols-2 bg-secondary/50">
-                <TabsTrigger value="member" className="gap-2 data-[state=active]:bg-cyan/10 data-[state=active]:text-cyan">
+                <TabsTrigger value="member" className="gap-2 data-[state=active]:bg-cyan-500/10 data-[state=active]:text-cyan-300">
                   <Users className="h-4 w-4" />
                   Anggota
                 </TabsTrigger>
-                <TabsTrigger value="admin" className="gap-2 data-[state=active]:bg-cyan/10 data-[state=active]:text-cyan">
+                <TabsTrigger value="admin" className="gap-2 data-[state=active]:bg-cyan-500/10 data-[state=active]:text-cyan-300">
                   <ShieldCheck className="h-4 w-4" />
                   Admin
                 </TabsTrigger>
