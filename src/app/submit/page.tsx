@@ -1,11 +1,13 @@
 import { AppShell } from "@/components/layout/AppShell";
 import { fetchMemberRoster } from "@/lib/supabase/queries";
 import { DutyForm } from "./_components/DutyForm";
+import { requireMember } from "@/lib/auth/session";
 import type { Member } from "@/types/db";
 
 export const dynamic = "force-dynamic";
 
 export default async function SubmitPage() {
+  await requireMember();
   const roster = await fetchMemberRoster();
   const members: Member[] = roster;
 

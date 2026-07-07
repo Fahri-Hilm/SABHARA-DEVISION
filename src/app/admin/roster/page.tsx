@@ -5,12 +5,14 @@ import { Badge } from "@/components/ui/badge";
 import { fetchMemberRoster } from "@/lib/supabase/queries";
 import { AddMemberButton } from "./_components/AddMemberButton";
 import { MemberActions } from "./_components/MemberActions";
+import { requireAdmin } from "@/lib/auth/session";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
 export default async function RosterPage() {
+  await requireAdmin();
   const members = await fetchMemberRoster();
 
   return (

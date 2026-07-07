@@ -4,7 +4,7 @@ import { DutyFeed } from "@/components/feed/DutyFeed";
 import { FeedFilter } from "@/components/feed/FeedFilter";
 import { fetchDutyReports, fetchMemberRoster } from "@/lib/supabase/queries";
 import { feedFilterSchema } from "@/lib/schemas/feed-filter";
-import { getSession } from "@/lib/auth/session";
+import { requireMember } from "@/lib/auth/session";
 import type { DutyReportStatus } from "@/types/db";
 
 export const dynamic = "force-dynamic";
@@ -41,7 +41,7 @@ export default async function FeedPage({
   } catch (e) {
     fetchError = e instanceof Error ? e.message : "Gagal memuat data";
   }
-  const session = await getSession();
+  const session = await requireMember();
 
   return (
     <AppShell>
